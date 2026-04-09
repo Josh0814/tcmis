@@ -34,7 +34,7 @@ def index():
 def read():
     Result = ""
     db = firestore.client()
-    collection_ref = db.collection("靜宜資管")    
+    collection_ref = db.collection("資管二B2026")    
     docs = collection_ref.get()    
     for doc in docs:         
         Result += "文件內容：{}".format(doc.to_dict()) + "<br>"    
