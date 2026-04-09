@@ -27,7 +27,7 @@ def index():
     link += "<a href=/welcome?u=建鴻&d=靜宜資管&c=資訊管理導論>Get傳值</a><hr>"
     link += "<a href=/account>POST傳值</a><hr>"
     link += "<a href=/math>次方與根號計算</a><hr>"
-    link += "<br><a href=/read>讀取Firestore資料</a><br>"
+    link += "<a href=/read>讀取Firestore資料</a><br>"
 
     return link
 @app.route("/read")
