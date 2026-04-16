@@ -1,12 +1,13 @@
-from flask import Flask, render_template, request
+import requests
+from bs4 import BeautifulSoup
+
+from flask import Flask, render_template,request
 from datetime import datetime
-app = Flask(__name__)
+
 import os
 import json
 import firebase_admin
 from firebase_admin import credentials, firestore
-import requests
-from bs4 import BeautifulSoup
 
 # 判斷是在 Vercel 還是本地
 if os.path.exists('serviceAccountKey.json'):
@@ -20,6 +21,10 @@ else:
 
 firebase_admin.initialize_app(cred)
 
+
+app = Flask(__name__)
+
+
 @app.route("/")
 def index():
     link = "<h1>歡迎來到黃建鴻的網站20260326</h1>"
@@ -31,7 +36,7 @@ def index():
     link += "<a href=/math>次方與根號計算</a><hr>"
     link += "<a href=/read>讀取Firestore資料</a><br>"
     link += "<a href=/search_form>教師搜尋系統(根據姓名關鍵字)</a><br>"
-    link += "<a href=/spider1>爬取子青老師本學期課程</a><br>"
+    link += "<a href=/spider>爬取子青老師本學期課程</a><hr>"
     return link
 @app.route("/search_form")
 def search_form():
@@ -43,19 +48,17 @@ def search_form():
     form_html += "<a href='/'>返回首頁</a>"
     return form_html
 
-@app.route("/spider1")
-def spider1():
+@app.route("/spider")
+def spider():
     R = ""
-    url = "http://www1.pu.edu.tw/~tcyang/course.html"
+    url = "https://www1.pu.edu.tw/~tcyang/course.html"
     Data = requests.get(url)
     Data.encoding = "utf-8"
     #print(Data.text)
     sp = BeautifulSoup(Data.text, "html.parser")
     result=sp.select(".team-box a")
-
     for i in result:
-        href_link = str(i.get("href")) if i.get("href") else ""
-    R += i.text + href_link + "<br>"
+        R += i.text + i.get("href")+"<br>"
     return R
 
 @app.route("/read2")
