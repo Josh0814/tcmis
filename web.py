@@ -55,7 +55,7 @@ def spider1():
 
     for i in result:
         href_link = str(i.get("href")) if i.get("href") else ""
-        R += i.text + href_link + "<br>"
+    R += i.text + href_link + "<br>"
     return R
 
 @app.route("/read2")
