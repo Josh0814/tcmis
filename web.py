@@ -39,8 +39,63 @@ def index():
     link += "<a href=/spider>爬取子青老師本學期課程</a><hr>"
     link += "<a href=/movie>爬取即將上映電影</a><hr>"
     link += "<a href=/spidermovie>讀取開眼電影即將上映影片，寫入Firestore</a><br>"
-
+    link += "<a href=/searchMovie>從資料庫搜尋電影</a><hr>"
     return link
+
+@app.route("/searchMovie")
+def searchMovie():
+    # 獲取使用者輸入的關鍵字 (預設為空字串)
+    keyword = request.args.get("keyword", "")
+    
+    # 建立搜尋表單 UI
+    R = "<h2>從資料庫搜尋電影</h2>"
+    R += "<form action='/searchMovie' method='GET'>"
+    R += f"請輸入片名關鍵字: <input type='text' name='keyword' value='{keyword}'> "
+    R += "<input type='submit' value='開始查詢'>"
+    R += "</form><hr>"
+
+    # 如果沒有輸入關鍵字，就先只顯示表單
+    if not keyword:
+        R += "<p>請在上方輸入關鍵字查詢資料庫中的電影。</p>"
+        R += "<br><a href='/'>返回首頁</a>"
+        return R
+
+    R += f"<h3>關鍵字「{keyword}」的查詢結果：</h3>"
+
+    # 連線到 Firestore 資料庫
+    db = firestore.client()
+    collection_ref = db.collection("電影2B")  # 對應你 /spidermovie 寫入的集合
+    docs = collection_ref.stream()
+
+    found_count = 0
+    for doc in docs:
+        movie = doc.to_dict()
+        title = movie.get("title", "")
+        
+        # 關鍵字篩選邏輯 (轉成小寫比對，避免大小寫差異找不到)
+        if keyword.lower() in title.lower():
+            found_count += 1
+            movie_id = doc.id
+            picture = movie.get("picture", "")
+            hyperlink = movie.get("hyperlink", "")
+            showDate = movie.get("showDate", "")
+            
+            # 組合回傳的 HTML 內容，包含編號、片名、上映日期、介紹頁與海報
+            R += "<div>"
+            R += f"<h4>編號: {movie_id}</h4>"
+            R += f"<h4>片名: {title}</h4>"
+            R += f"<p>上映日期: {showDate}</p>"
+            R += f"<p><a href='{hyperlink}' target='_blank'>電影介紹頁</a></p>"
+            R += f"<img src='{picture}' width='200'><br>"
+            R += "</div><hr>"
+
+    # 如果沒找到符合的電影
+    if found_count == 0:
+        R += "<p>抱歉，資料庫中找不到符合條件的電影，請嘗試其他關鍵字或先執行爬蟲寫入資料。</p>"
+
+    R += "<br><a href='/'>返回首頁</a>"
+    return R
+
 @app.route("/spidermovie")
 def spidermovie():
     R = ""
@@ -88,6 +143,7 @@ def spidermovie():
     R += "網站最新更新日期:" + lastUpdate + "<br>"
     R += "總共爬取"+ str(total) + "部電影到資料庫"
     return R
+
 
 @app.route("/movie")
 def movie():
