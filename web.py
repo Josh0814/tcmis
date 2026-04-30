@@ -38,7 +38,57 @@ def index():
     link += "<a href=/search_form>教師搜尋系統(根據姓名關鍵字)</a><br>"
     link += "<a href=/spider>爬取子青老師本學期課程</a><hr>"
     link += "<a href=/movie>爬取即將上映電影</a><hr>"
+    link += "<a href=/spidermovie>讀取開眼電影即將上映影片，寫入Firestore</a><br>"
+
     return link
+@app.route("/spidermovie")
+def spidermovie():
+    R = ""
+
+
+
+    db = firestore.client()
+
+    import requests
+    from bs4 import BeautifulSoup
+    url = "http://www.atmovies.com.tw/movie/next/"
+    Data = requests.get(url)
+    Data.encoding = "utf-8"
+    sp = BeautifulSoup(Data.text, "html.parser")
+    lastUpdate = sp.find(class_="smaller09").text.replace("更新時間：","")
+
+
+    result=sp.select(".filmListAllX li")
+    info = ""
+    total = 0
+    for item in result:
+      total += 1
+      movie_id = item.find("a").get("href").replace("/movie/", "").replace("/", "")
+      title = item.find(class_="filmtitle").text
+      picture = "http://www.atmovies.com.tw" + item.find("img").get("src")
+      hyperlink = "http://www.atmovies.com.tw" + item.find("a").get("href")
+
+      showDate = item.find(class_="runtime").text[5:15]
+      info += movie_id + "\n" + title + "\n" + picture + "\n" + hyperlink + "\n" + showDate +"\n\n"
+
+      doc = {
+        "title": title,
+        "picture": picture,
+        "hyperlink": hyperlink,
+        "showDate": showDate,
+        "lastUpdate": lastUpdate
+    }
+
+      
+      doc_ref = db.collection("電影2B").document(movie_id)
+      doc_ref.set(doc)
+
+    #print(info)
+    print(lastUpdate)
+    R += "網站最新更新日期:" + lastUpdate + "<br>"
+    R += "總共爬取"+ str(total) + "部電影到資料庫"
+    return R
+
 @app.route("/movie")
 def movie():
     # 獲取使用者輸入的關鍵字 (預設為空字串)
