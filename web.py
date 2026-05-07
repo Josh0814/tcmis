@@ -45,7 +45,7 @@ def index():
 
 @app.route("/road")
 def road():
-    R = "<h1>台中市十大肇事路口(113年10月)</h1><br>"
+    R = "<h1>台中市十大肇事路口(113年10月)作者:黃建鴻</h1><br>"
 
     url = "https://datacenter.taichung.gov.tw/swagger/OpenData/a1b899c0-511f-4e3d-b22b-814982a97e41"
     headers = {'User-Agent': 'Mozilla/5.0'}
@@ -53,7 +53,7 @@ def road():
     #print(Data.text)
     JsonData = json.loads(Data.text)
     for item in JsonData:
-        R += item["路口名稱"] + ",原因:"+ item["主要肇因"] + ",件數:" + item["總件數"] +"<br>"
+        R += item["路口名稱"] + ",原因:"+ item["主要肇因"] + ",件數:"+ item["總件數"] +"<br>"
 
     return R
 @app.route("/searchMovie")
