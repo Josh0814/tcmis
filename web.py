@@ -55,7 +55,7 @@ def webhook():
     #info = "我是黃建鴻設計的機器人,動作：" + action + "； 查詢內容：" + msg
 
     if (action == "rateChoice"):
-        rate =  req["queryResult"]["parameters"]("rate")
+        rate =  req["queryResult"]["parameters"]["rate"]
         info = "我是黃建鴻設計的機器人,您選擇的電影分級是：" + rate
 
     return make_response(jsonify({"fulfillmentText": info}))
