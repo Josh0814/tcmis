@@ -160,7 +160,7 @@ def weather():
 def road():
     R = "<h1>台中市十大肇事路口(113年10月)作者:黃建鴻</h1><br>"
 
-    url = "https://datacenter.taichung.gov.tw/swagger/OpenData/a1b899c0-511f-4e3d-b22b-814982a97e41"
+    url = " https://newdatacenter.taichung.gov.tw/api/v1/no-auth/resource.download?rid=a1b899c0-511f-4e3d-b22b-814982a97e41"
     headers = {'User-Agent': 'Mozilla/5.0'}
     Data = requests.get(url, headers=headers)
     #print(Data.text)
