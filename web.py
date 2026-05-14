@@ -70,8 +70,6 @@ def webhook():
     return make_response(jsonify({"fulfillmentText": info}))
 
 
-    return make_response(jsonify({"fulfillmentText": info}))
-
 @app.route("/rate")
 def rate():
     #本週新片
