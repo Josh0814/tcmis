@@ -109,6 +109,10 @@ def webhook():
                 result += "片名：" + dict["title"] + "\n"
                 result += "介紹：" + dict["hyperlink"] + "\n\n"
         info += result
+
+    elif (action == "input.unknown"):
+        info =  req["queryResult"]["queryText"]
+
     return make_response(jsonify({"fulfillmentText": info}))
 
 
